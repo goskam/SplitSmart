@@ -15,6 +15,11 @@ struct ContentView: View {
     
     // State property to control the presentation of the add expense sheet
     @State private var showingAddExpense = false
+    @State private var sortOrder = [
+        SortDescriptor(\Expense.name),
+        SortDescriptor(\Expense.creationDate),
+        SortDescriptor(\Expense.amount)
+    ]
 
     var body: some View {
 
@@ -22,42 +27,32 @@ struct ContentView: View {
             
             Text("Expenses")
             
-            // List to display existing expense items
-            List {
-                ForEach(expenseItems) { item in
-                    HStack{
-                        //Text(item.category)
-                        EmojiCategoryView(category: item.category)
-                            .padding()
-                            .background(Color.orange.opacity(0.2))
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-
-                        VStack(alignment: .leading) {
-                            Text(item.name)
-                                .font(.headline)
-                            Text(item.creationDateFormatted())
-                                .font(.caption)
-                                .foregroundStyle(.gray)
-
-
-                        }
-                        
-
-                        
-                        Spacer()
-                        
-                        Text(item.amount, format: .currency(code: "USD"))
-
-                    }
-                }
-                // Enable swipe-to-delete for the list items
-                .onDelete(perform: deleteExpenses)
-
-            }
+            ExpensesView(sortOrder: sortOrder)
             // Toolbar button to present the add expense sheet
             .toolbar {
                 Button("Add expense", systemImage: "plus") {
                     showingAddExpense.toggle()
+                }
+                
+                Menu("Sort", systemImage: "arrow.up.arrow.down") {
+                    
+                    Picker("Sort", selection: $sortOrder) {
+                        Text("Sort by Name")
+                            .tag([
+                                SortDescriptor(\Expense.name),
+                                SortDescriptor(\Expense.amount)                        ])
+                        Text("Sort by Amount")
+                            .tag([
+                                SortDescriptor(\Expense.amount),
+                                SortDescriptor(\Expense.name),
+                            ])
+                        Text("Sort by Date")
+                            .tag([
+                                SortDescriptor(\Expense.creationDate),
+                                SortDescriptor(\Expense.name),
+                            ])
+                    }
+                    
                 }
             }
             // Present the add expense view as a sheet
@@ -67,13 +62,6 @@ struct ContentView: View {
         }
     }
     
-    // Function to delete selected expenses from the list (swipe left)
-    func deleteExpenses(at offsets: IndexSet) {
-        for offset in offsets {
-            let expense = expenseItems[offset]
-            modelContext.delete(expense)
-        }
-    }
 }
 
 #Preview {
