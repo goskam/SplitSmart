@@ -26,9 +26,25 @@ struct ContentView: View {
             List {
                 ForEach(expenseItems) { item in
                     HStack{
-                        Text(item.name)
-                        Text(item.category)
-                        Text(String(item.amount))
+                        //Text(item.category)
+                        EmojiCategoryView(category: item.category)
+                            .padding()
+                            .background(Color.orange.opacity(0.2))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                        VStack(alignment: .leading) {
+                            Text(item.name)
+                                .font(.headline)
+
+
+                        }
+                        
+
+                        
+                        Spacer()
+                        
+                        Text(item.amount, format: .currency(code: "USD"))
+
                     }
                 }
                 // Enable swipe-to-delete for the list items
