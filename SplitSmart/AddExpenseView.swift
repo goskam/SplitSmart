@@ -23,23 +23,10 @@ struct AddExpenseView: View {
       "Select a category",
       "Food",
       "Travel",
-      "Transport",
       "Rent",
       "Groceries",
-      "Family",
-      "Fashion",
-      "Utilities",
-      "Healthcare",
-      "Entertainment",
-      "Education",
       "Gifts",
-      "Insurance",
-      "Savings",
-      "Debt Repayment",
-      "Subscriptions",
-      "Pets",
-      "Household",
-      "Miscellaneous"
+      "Pets"
     ]
     
     
