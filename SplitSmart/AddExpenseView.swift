@@ -50,7 +50,10 @@ struct AddExpenseView: View {
                 // Save button to add the new expense
                 Button("Save") {
 
-                    let newExpense = Expense(name: name, category: category, amount: amount)
+                    
+                    let newExpense = Expense(name: name, category: category, amount: amount, creationDate: .now)
+                    
+                    print(newExpense.creationDate)
                     
                     modelContext.insert(newExpense)
                     dismiss()

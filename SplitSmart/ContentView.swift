@@ -35,6 +35,9 @@ struct ContentView: View {
                         VStack(alignment: .leading) {
                             Text(item.name)
                                 .font(.headline)
+                            Text(item.creationDateFormatted())
+                                .font(.caption)
+                                .foregroundStyle(.gray)
 
 
                         }
