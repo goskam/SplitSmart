@@ -42,8 +42,15 @@ struct AddExpenseView: View {
                     }
                 }
                 
-                TextField("Amount", value: $amount, format: .currency(code: "USD"))
-                    .keyboardType(.decimalPad)
+//                TextField("Amount", value: $amount, format: .currency(code: "USD"))
+//                    .keyboardType(.decimalPad)
+                
+                HStack {
+                    TextField("Amount", value: $amount, format: .number)
+                        .keyboardType(.decimalPad)
+                    Text("USD")
+                }
+
             }
             .navigationTitle("Add new expense")
             .toolbar {
