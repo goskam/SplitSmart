@@ -20,14 +20,19 @@ struct AddExpenseView: View {
     
     // List of expense categories
     let categories = [
-      "Select a category",
+      "Select a category", // Placeholder
       "Food",
       "Travel",
       "Rent",
       "Groceries",
       "Gifts",
-      "Pets"
+      "Pets",
+      "Other"
     ]
+    
+    private var hasValidDetails: Bool {
+        !name.isEmpty && amount != 0.0
+    }
     
     
     var body: some View {
@@ -57,6 +62,9 @@ struct AddExpenseView: View {
                 // Save button to add the new expense
                 Button("Save") {
 
+                    if category == "Select a category" {
+                        category = "Other"
+                    }
                     
                     let newExpense = Expense(name: name, category: category, amount: amount, creationDate: .now)
                     
@@ -65,6 +73,7 @@ struct AddExpenseView: View {
                     modelContext.insert(newExpense)
                     dismiss()
                 }
+                .disabled(!hasValidDetails)
             }
             
 
