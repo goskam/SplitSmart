@@ -46,8 +46,18 @@ struct ExpensesView: View {
 
     }
     
-    init(sortOrder: [SortDescriptor<Expense>]) {
-        _expenseItems = Query(sort: sortOrder)
+//    init(sortOrder: [SortDescriptor<Expense>]) {
+//        _expenseItems = Query(sort: sortOrder)
+//    }
+    
+    init(selectedCategory: String?, sortOrder: [SortDescriptor<Expense>]) {
+        if let selectedCategory = selectedCategory, selectedCategory != "All" {
+            _expenseItems = Query(filter: #Predicate<Expense> { item in
+                item.category == selectedCategory
+            }, sort: sortOrder)
+        } else {
+            _expenseItems = Query(sort: sortOrder)
+        }
     }
     
     // Function to delete selected expenses from the list (swipe left)
@@ -57,9 +67,11 @@ struct ExpensesView: View {
             modelContext.delete(expense)
         }
     }
+    
+
 }
 
 #Preview {
-    ExpensesView(sortOrder: [SortDescriptor(\Expense.name)])
+    ExpensesView(selectedCategory: "Travel", sortOrder: [SortDescriptor(\Expense.name)])
         .modelContainer(for: Expense.self)
 }
