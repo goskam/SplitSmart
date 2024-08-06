@@ -21,7 +21,7 @@ struct ContentView: View {
         SortDescriptor(\Expense.amount)
     ]
     
-    @State private var selectedCategory: String? = "Select a category"
+    @State private var selectedCategory: String? = "All"
     
     let categories = [
         "All",
