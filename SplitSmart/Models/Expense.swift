@@ -17,13 +17,15 @@ class Expense: Identifiable, Equatable { //Identifiable, Equatable, Codable
     var category: String
     var amount: Double
     var creationDate: Date
+    var currencyCode: String //"PLN", "USD", "EUR"
 
-    init(id: UUID = UUID(), name: String, category: String, amount: Double, creationDate: Date) {
+    init(id: UUID = UUID(), name: String, category: String, amount: Double, creationDate: Date, currencyCode: String) {
         self.id = id
         self.name = name
         self.category = category
         self.amount = amount
         self.creationDate = creationDate
+        self.currencyCode = currencyCode
     }
     
     
@@ -36,4 +38,4 @@ class Expense: Identifiable, Equatable { //Identifiable, Equatable, Codable
     }
 
     
-} 
+}
