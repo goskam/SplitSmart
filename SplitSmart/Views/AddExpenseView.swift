@@ -12,12 +12,16 @@ struct AddExpenseView: View {
     
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
+
+    @Query var groupMembers: [GroupMember]
+    
     
     // State properties for the expense fields
     @State private var name = ""
     @State private var category = "Select a category"
     @State private var amount = 0.0
     @State private var currencyCode = "USD" //Default currency
+    @State private var selectedGroupMember: GroupMember?
 
     
     // List of expense categories
@@ -40,7 +44,6 @@ struct AddExpenseView: View {
     private var hasValidDetails: Bool {
         !name.isEmpty && amount != 0.0
     }
-    
     
     var body: some View {
         
@@ -68,6 +71,14 @@ struct AddExpenseView: View {
                         }
                     }
                 }
+                
+                Picker("Who paid?", selection: $selectedGroupMember) {
+                    Text("Select who paid").tag(GroupMember?.none) // Placeholder for unselected state
+                    ForEach(groupMembers) { member in
+                        Text(member.name).tag(member as GroupMember?)
+                    }
+                }
+            
 
             }
             .navigationTitle("Add new expense")
@@ -81,7 +92,15 @@ struct AddExpenseView: View {
                         category = "Other"
                     }
                     
-                    let newExpense = Expense(name: name, category: category, amount: amount, creationDate: .now, currencyCode: currencyCode)
+                    // Ensure selectedGroupMember is not nil
+                    guard let groupMember = selectedGroupMember else {
+                        // Handle the case where no group member is selected
+                        // You could show an alert or a message here
+                        print("No group member selected")
+                        return
+                    }
+                    
+                    let newExpense = Expense(name: name, category: category, amount: amount, creationDate: .now, currencyCode: currencyCode, groupMember: groupMember)
                     
                     print(newExpense.creationDate)
                     print(newExpense.currencyCode)
@@ -92,6 +111,8 @@ struct AddExpenseView: View {
                 .disabled(!hasValidDetails)
             }
             
+            
+
 
         }
         

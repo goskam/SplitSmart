@@ -12,6 +12,7 @@ struct ContentView: View {
     
     @Environment(\.modelContext) var modelContext
     @Query var expenseItems: [Expense]
+    @Query var groupMembers: [GroupMember]
     
     // State property to control the presentation of the add expense sheet
     @State private var showingAddExpense = false
@@ -22,6 +23,8 @@ struct ContentView: View {
     ]
     
     @State private var selectedCategory: String? = "All"
+    
+    @State private var showingAddGroupMember = false
     
     let categories = [
         "All",
@@ -40,6 +43,7 @@ struct ContentView: View {
             VStack {
                 Text("Total")
                     .font(.headline)
+                    .padding(.top)
                 
                 Text(totalAmount, format: .currency(code: "USD"))
                     .font(.largeTitle)
@@ -53,6 +57,12 @@ struct ContentView: View {
 
             // Toolbar button to present the add expense sheet
             .toolbar {
+                
+                // Button to show Add Owner View
+                Button("Add group member", systemImage: "person.badge.plus") {
+                    showingAddGroupMember.toggle()
+                }
+                
                 
                 //Sort data
                 Menu("Sort", systemImage: "arrow.up.arrow.down") {
@@ -95,6 +105,9 @@ struct ContentView: View {
             // Present the add expense view as a sheet
             .sheet(isPresented: $showingAddExpense) {
                 AddExpenseView()
+            }
+            .sheet(isPresented: $showingAddGroupMember) {
+                AddGroupMemberView()
             }
         }
     }

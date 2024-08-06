@@ -29,7 +29,9 @@ struct ExpensesView: View {
                         Text(item.creationDateFormatted())
                             .font(.caption)
                             .foregroundStyle(.gray)
-
+                        Text(item.groupMember.name)
+                            .font(.caption)
+                            .foregroundStyle(.gray)
 
                     }
                     
