@@ -18,7 +18,7 @@ import SwiftData
 struct ExpensesHomeView: View {
     
     @Environment(\.modelContext) var modelContext
-    //@Query var expenseItems: [Expense]
+    @Query var expenseItems: [Expense]
     //@Query var groupMembers: [GroupMember]
     
     let group: Group
@@ -57,7 +57,7 @@ struct ExpensesHomeView: View {
                     .padding(.top)
                 
                 //totalAmount
-                Text(1111, format: .currency(code: "USD"))
+                Text(totalAmount, format: .currency(code: "USD"))
                     .font(.largeTitle)
                     .foregroundColor(.blue)
 
@@ -137,19 +137,23 @@ struct ExpensesHomeView: View {
         }
     }
     
+    //Filter expenses for specific group that was passed from ExpenseHomeView
+    private var filteredExpenseItems: [Expense] {
+        expenseItems.filter { $0.group.id == group.id }
+    }
     
-//    private var totalAmount: Double {
-//        // Filter expense items based on selected category
-//        let filteredItems = expenseItems.filter { item in
-//            if selectedCategory != "All" {
-//                return item.category == selectedCategory
-//            }
-//            return true
-//        }
-//        
-//        // Compute total amount
-//        return filteredItems.reduce(0) { $0 + $1.amount }
-//    }
+    private var totalAmount: Double {
+        // Filter expense items based on selected category
+        let filteredItems = filteredExpenseItems.filter { item in
+            if selectedCategory != "All" {
+                return item.category == selectedCategory
+            }
+            return true
+        }
+        
+        // Compute total amount
+        return filteredItems.reduce(0) { $0 + $1.amount }
+    }
     
 }
 
