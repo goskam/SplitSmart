@@ -20,9 +20,6 @@
 
 - **Group-Specific Expenses**:
   - Track and manage expenses unique to each group.
-## Planned Features
-
-- **Expense Grouping**: Group and track expenses with other users.
 
 
 ## Technologies Used
