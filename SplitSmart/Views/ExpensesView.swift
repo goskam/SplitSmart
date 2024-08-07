@@ -13,37 +13,44 @@ struct ExpensesView: View {
     @Query var expenseItems: [Expense]
     
     var body: some View {
-        // List to display existing expense items
-        List {
-            ForEach(expenseItems) { item in
-                HStack{
-                    //Text(item.category)
-                    EmojiCategoryView(category: item.category)
-                        .padding()
-                        .background(Color.orange.opacity(0.2))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-
-                    VStack(alignment: .leading) {
-                        Text(item.name)
-                            .font(.headline)
-                        Text(item.creationDateFormatted())
-                            .font(.caption)
-                            .foregroundStyle(.gray)
-                        Text(item.groupMember.name)
-                            .font(.caption)
-                            .foregroundStyle(.gray)
-
+        
+        NavigationStack {
+            // List to display existing expense items
+            List {
+                ForEach(expenseItems) { item in
+                    
+                    NavigationLink(destination: ExpenseDetailView(expense: item)) {
+                        
+                        HStack {
+                            //Text(item.category)
+                            EmojiCategoryView(category: item.category)
+                                .padding()
+                                .background(Color.orange.opacity(0.2))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                            
+                            VStack(alignment: .leading) {
+                                Text(item.name)
+                                    .font(.headline)
+                                Text(item.creationDateFormatted())
+                                    .font(.caption)
+                                    .foregroundStyle(.gray)
+                                Text(item.payer.name)
+                                    .font(.caption)
+                                    .foregroundStyle(.gray)
+                                
+                            }
+                            
+                            Spacer()
+                            
+                            Text(item.amount, format: .currency(code: item.currencyCode))
+                            
+                        }
                     }
-                    
-                    Spacer()
-                    
-                    Text(item.amount, format: .currency(code: item.currencyCode))
-
                 }
+                // Enable swipe-to-delete for the list items
+                .onDelete(perform: deleteExpenses)
+                
             }
-            // Enable swipe-to-delete for the list items
-            .onDelete(perform: deleteExpenses)
-
         }
 
     }

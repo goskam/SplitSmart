@@ -25,6 +25,8 @@ struct ContentView: View {
     @State private var selectedCategory: String? = "All"
     
     @State private var showingAddGroupMember = false
+    @State private var showingBalances = false
+
     
     let categories = [
         "All",
@@ -41,7 +43,7 @@ struct ContentView: View {
         NavigationStack {
             
             VStack {
-                Text("Total")
+                Text("Total Group Expenses")
                     .font(.headline)
                     .padding(.top)
                 
@@ -50,6 +52,19 @@ struct ContentView: View {
                     .foregroundColor(.blue)
 
             }
+            
+            // Add a button to navigate to BalancesView
+            NavigationLink(destination: BalancesView()) {
+                Text("Balances")
+                    .padding(10)
+                    .background(.thinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .font(.caption)
+                    .foregroundStyle(.black)
+                
+            }
+
+        
             
             //List of existing expenses
             ExpensesView(selectedCategory: selectedCategory == "All" ? nil : selectedCategory, sortOrder: sortOrder)

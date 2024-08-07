@@ -21,7 +21,11 @@ struct AddExpenseView: View {
     @State private var category = "Select a category"
     @State private var amount = 0.0
     @State private var currencyCode = "USD" //Default currency
-    @State private var selectedGroupMember: GroupMember?
+    @State private var payer: GroupMember?
+    //@State private var selectedPayees: Set<GroupMember> = []
+    @State private var payee: GroupMember?
+
+
 
     
     // List of expense categories
@@ -49,35 +53,44 @@ struct AddExpenseView: View {
         
         NavigationStack {
             Form {
-                TextField("Name", text: $name)
                 
-                Picker("Category", selection: $category) {
-                    ForEach(categories, id: \.self) {
-                        Text($0)
-                    }
+                
+                Section("Title") {
+                    TextField("Expense name", text: $name)
                 }
                 
-//                TextField("Amount", value: $amount, format: .currency(code: "USD"))
-//                    .keyboardType(.decimalPad)
-                
-                HStack {
-                    TextField("Amount", value: $amount, format: .number)
-                        .keyboardType(.decimalPad)
-                    //Text(currencyCode)
-                    
-                    Picker("Currency", selection: $currencyCode) {
-                        ForEach(currencyCodes, id: \.self) {
-                            Text($0)
+                Section("Category") {
+                    Picker("", selection: $category) {
+                        ForEach(categories, id: \.self) { item in
+                            Text(item)
                         }
                     }
+                    .frame(maxWidth: 170, alignment: .leading) 
+                }
+
+ 
+                Section("Paid by") {
+                    
+                    Picker("", selection: $payer) {
+                        Text("Select payer").tag(GroupMember?.none) // Placeholder for unselected state
+                        ForEach(groupMembers) { member in
+                            Text(member.name).tag(member as GroupMember?)
+                        }
+                    }
+                    .frame(maxWidth: 140, alignment: .leading) // Adjust width and alignment
+                    
                 }
                 
-                Picker("Who paid?", selection: $selectedGroupMember) {
-                    Text("Select who paid").tag(GroupMember?.none) // Placeholder for unselected state
-                    ForEach(groupMembers) { member in
-                        Text(member.name).tag(member as GroupMember?)
+                Section("Split equally with") {
+                    Picker("", selection: $payee) {
+                        Text("Select payee").tag(GroupMember?.none) // Placeholder for unselected state
+                        ForEach(groupMembers) { member in
+                            Text(member.name).tag(member as GroupMember?)
+                        }
                     }
+                    .frame(maxWidth: 140, alignment: .leading) // Adjust width and alignment
                 }
+
             
 
             }
@@ -93,19 +106,33 @@ struct AddExpenseView: View {
                     }
                     
                     // Ensure selectedGroupMember is not nil
-                    guard let groupMember = selectedGroupMember else {
+                    guard let payer = payer else {
                         // Handle the case where no group member is selected
                         // You could show an alert or a message here
                         print("No group member selected")
                         return
                     }
                     
-                    let newExpense = Expense(name: name, category: category, amount: amount, creationDate: .now, currencyCode: currencyCode, groupMember: groupMember)
+                    guard let payee = payee else {
+                        print("No payees selected")
+                        return
+                    }
+                    
+                    let newExpense = Expense(name: name, category: category, amount: amount, creationDate: .now, currencyCode: currencyCode, payer: payer, payee: payee)
                     
                     print(newExpense.creationDate)
                     print(newExpense.currencyCode)
 
                     modelContext.insert(newExpense)
+                    
+                    // Update balances: split amount in half
+                    let splitAmount = amount / 2
+                    payer.balance += splitAmount
+                    payee.balance -= splitAmount
+                    
+                    // Save changes to the model context
+                    try? modelContext.save()
+                    
                     dismiss()
                 }
                 .disabled(!hasValidDetails)

@@ -13,6 +13,7 @@ import SwiftUI
 class GroupMember {
     var id = UUID()
     var name: String
+    var balance: Double = 0.0
     
     init(id: UUID = UUID(), name: String) {
         self.id = id
