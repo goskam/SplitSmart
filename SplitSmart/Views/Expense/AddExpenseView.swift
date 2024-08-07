@@ -14,8 +14,8 @@ struct AddExpenseView: View {
     @Environment(\.dismiss) var dismiss
 
     @Query var groupMembers: [GroupMember]
-    
-    
+
+
     // State properties for the expense fields
     @State private var name = ""
     @State private var category = "Select a category"
@@ -25,8 +25,12 @@ struct AddExpenseView: View {
     //@State private var selectedPayees: Set<GroupMember> = []
     @State private var payee: GroupMember?
 
-
-
+    let group: Group
+    
+    // Filtered group members based on the group
+    private var filteredGroupMembers: [GroupMember] {
+        groupMembers.filter { $0.group.id == group.id }
+    }
     
     // List of expense categories
     let categories = [
@@ -68,12 +72,23 @@ struct AddExpenseView: View {
                     .frame(maxWidth: 170, alignment: .leading) 
                 }
 
+                HStack {
+                    TextField("Amount", value: $amount, format: .number)
+                        .keyboardType(.decimalPad)
+
+                    Picker("", selection: $currencyCode) {
+                        ForEach(currencyCodes, id: \.self) {
+                            Text($0)
+                        }
+                    }
+                }
+
  
                 Section("Paid by") {
                     
                     Picker("", selection: $payer) {
                         Text("Select payer").tag(GroupMember?.none) // Placeholder for unselected state
-                        ForEach(groupMembers) { member in
+                        ForEach(filteredGroupMembers) { member in
                             Text(member.name).tag(member as GroupMember?)
                         }
                     }
@@ -84,7 +99,7 @@ struct AddExpenseView: View {
                 Section("Split equally with") {
                     Picker("", selection: $payee) {
                         Text("Select payee").tag(GroupMember?.none) // Placeholder for unselected state
-                        ForEach(groupMembers) { member in
+                        ForEach(filteredGroupMembers) { member in
                             Text(member.name).tag(member as GroupMember?)
                         }
                     }
@@ -118,11 +133,12 @@ struct AddExpenseView: View {
                         return
                     }
                     
-                    let newExpense = Expense(name: name, category: category, amount: amount, creationDate: .now, currencyCode: currencyCode, payer: payer, payee: payee)
+                    let newExpense = Expense(name: name, category: category, amount: amount, creationDate: .now, currencyCode: currencyCode, payer: payer, payee: payee, group: group)
                     
                     print(newExpense.creationDate)
                     print(newExpense.currencyCode)
 
+                    //group.expenses.append(newExpense)
                     modelContext.insert(newExpense)
                     
                     // Update balances: split amount in half
@@ -137,16 +153,16 @@ struct AddExpenseView: View {
                 }
                 .disabled(!hasValidDetails)
             }
-            
-            
-
-
         }
-        
     }
+    
+    //Filter group members for specific froup
+//    private var filteredGroupMembers: [GroupMember] {
+//        return allGroupMembers.filter { $0.group == group }
+//    }
 }
 
 
-#Preview {
-    AddExpenseView()
-}
+//#Preview {
+//    AddExpenseView()
+//}

@@ -66,6 +66,6 @@ struct ExpenseDetailView: View {
     }
 }
 
-#Preview {
-    ExpenseDetailView(expense: Expense(name: "Test Expense", category: "Food", amount: 50.0, creationDate: .now, currencyCode: "USD", payer: GroupMember(name: "Gosia"), payee: GroupMember(name: "David")))
-}
+//#Preview {
+//    ExpenseDetailView(expense: Expense(name: "Test Expense", category: "Food", amount: 50.0, creationDate: .now, currencyCode: "USD", payer: GroupMember(name: "Gosia"), payee: GroupMember(name: "David")))
+//}

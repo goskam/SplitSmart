@@ -11,6 +11,8 @@ struct AddGroupMemberView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
     
+    let group: Group
+    
     @State private var groupMemberName = ""
 
     var body: some View {
@@ -21,8 +23,9 @@ struct AddGroupMemberView: View {
             .navigationTitle("Add New Group Member")
             .toolbar {
                 Button("Save") {
-                    let newGroupMember = GroupMember(name: groupMemberName)
+                    let newGroupMember = GroupMember(name: groupMemberName, group: group)
                     modelContext.insert(newGroupMember)
+                   // group.members.append(newGroupMember) // Add member to the group's members list TEST
                     dismiss()
                 }
             }
@@ -30,5 +33,5 @@ struct AddGroupMemberView: View {
 }
 
 #Preview {
-    AddGroupMemberView()
+    AddGroupMemberView(group: Group(name: "Hello"))
 }

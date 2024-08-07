@@ -18,10 +18,11 @@ class Expense: Identifiable, Equatable { //Identifiable, Equatable, Codable
     var amount: Double
     var creationDate: Date
     var currencyCode: String //"PLN", "USD", "EUR"
-    var payer: GroupMember
-    var payee: GroupMember
+    @Relationship var payer: GroupMember
+    @Relationship var payee: GroupMember
+    @Relationship var group: Group
 
-    init(id: UUID = UUID(), name: String, category: String, amount: Double, creationDate: Date, currencyCode: String, payer: GroupMember, payee: GroupMember) {
+    init(id: UUID = UUID(), name: String, category: String, amount: Double, creationDate: Date, currencyCode: String, payer: GroupMember, payee: GroupMember, group: Group) {
         self.id = id
         self.name = name
         self.category = category
@@ -30,6 +31,7 @@ class Expense: Identifiable, Equatable { //Identifiable, Equatable, Codable
         self.currencyCode = currencyCode
         self.payer = payer
         self.payee = payee
+        self.group = group
 
     }
     

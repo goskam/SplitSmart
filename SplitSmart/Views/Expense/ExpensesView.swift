@@ -12,12 +12,14 @@ struct ExpensesView: View {
     @Environment(\.modelContext) var modelContext
     @Query var expenseItems: [Expense]
     
+    let group: Group
+
     var body: some View {
         
         NavigationStack {
             // List to display existing expense items
             List {
-                ForEach(expenseItems) { item in
+                ForEach(filteredExpenseItems) { item in
                     
                     NavigationLink(destination: ExpenseDetailView(expense: item)) {
                         
@@ -49,17 +51,17 @@ struct ExpensesView: View {
                 }
                 // Enable swipe-to-delete for the list items
                 .onDelete(perform: deleteExpenses)
-                
             }
         }
-
     }
     
-//    init(sortOrder: [SortDescriptor<Expense>]) {
-//        _expenseItems = Query(sort: sortOrder)
-//    }
+    //Filter expenses for specific group that was passed from ExpenseHomeView
+    private var filteredExpenseItems: [Expense] {
+        expenseItems.filter { $0.group.id == group.id }
+    }
     
-    init(selectedCategory: String?, sortOrder: [SortDescriptor<Expense>]) {
+    init(selectedCategory: String?, sortOrder: [SortDescriptor<Expense>], group: Group) {
+        self.group = group
         if let selectedCategory = selectedCategory, selectedCategory != "All" {
             _expenseItems = Query(filter: #Predicate<Expense> { item in
                 item.category == selectedCategory
@@ -76,11 +78,9 @@ struct ExpensesView: View {
             modelContext.delete(expense)
         }
     }
-    
-
 }
 
 #Preview {
-    ExpensesView(selectedCategory: "Travel", sortOrder: [SortDescriptor(\Expense.name)])
+ExpensesView(selectedCategory: "Travel", sortOrder: [SortDescriptor(\Expense.name)], group: Group(name: "Hello"))
         .modelContainer(for: Expense.self)
 }
