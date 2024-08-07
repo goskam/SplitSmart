@@ -12,7 +12,7 @@ struct GroupHomeView: View {
     
     @Environment(\.modelContext) var modelContext
     @State private var groups: [Group] = []
-    @State private var newGroupName: String = ""
+    @State private var showingAddGroup = false
     
     @Query var existingGroups: [Group]
     
@@ -51,29 +51,23 @@ struct GroupHomeView: View {
                 }
                 .onDelete(perform: deleteGroups)
 
-                HStack {
-                       TextField("New Group Name", text: $newGroupName)
-                       Button(action: addGroup) {
-                           Text("Add Group")
-                       }
-                   }
+
+            }
+            .toolbar {
+                Button("Add group", systemImage: "plus") {
+                    showingAddGroup.toggle()
+                }
             }
             .navigationTitle("Groups")
+            // Present the add expense view as a sheet
+            .sheet(isPresented: $showingAddGroup) {
+                AddGroupView()
+            }
 
         }
 
     }
         
-    
-    
-     func addGroup() {
-        let newGroup = Group(name: newGroupName)
-        print("New group created with name \(newGroup.name)")
-        
-        modelContext.insert(newGroup)
-        
-        newGroupName = ""
-    }
     
     private func deleteGroups(at offsets: IndexSet) {
         for offset in offsets {
