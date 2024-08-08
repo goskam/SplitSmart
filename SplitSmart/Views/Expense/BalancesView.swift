@@ -12,11 +12,18 @@ struct BalancesView: View {
     @Query var groupMembers: [GroupMember]
     @Query var expenseItems: [Expense]
 
+    let group: Group
+    
+    // Filtered group members based on the group
+    private var filteredGroupMembers: [GroupMember] {
+        groupMembers.filter { $0.group.id == group.id }
+    }
+    
     var body: some View {
         List {
             // Section for Balances
             Section(header: Text("Balances")) {
-                ForEach(groupMembers) { member in
+                ForEach(filteredGroupMembers) { member in
                     HStack {
                         Text(member.name)
                         Spacer()
@@ -27,8 +34,8 @@ struct BalancesView: View {
             }
 
             // Section for Total Expenses
-            Section(header: Text("Total Expenses")) {
-                ForEach(groupMembers) { member in
+            Section(header: Text("Totals paid by")) {
+                ForEach(filteredGroupMembers) { member in
                     HStack {
                         Text(member.name)
                         Spacer()
@@ -49,5 +56,5 @@ struct BalancesView: View {
 }
 
 #Preview {
-    BalancesView()
+    BalancesView(group: Group(name: "Hello"))
 }

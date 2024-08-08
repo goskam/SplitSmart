@@ -38,7 +38,7 @@ struct ExpenseDetailView: View {
                 
                 VStack(alignment: .leading) {
                     Text("\(expense.payer.name) paid \(expense.amount, format: .currency(code: expense.currencyCode))")
-                    Text("\(expense.payee.name) owes: \(expense.payer.name) \(expense.payee.balance)")
+                    //Text("\(expense.payee.name) owes: \(expense.payer.name) \(expense.payee.balance)")
                     
                 }
                 .padding()
@@ -46,7 +46,7 @@ struct ExpenseDetailView: View {
                 VStack(alignment: .leading) {
                     
                     Text("Current balance of payer \(expense.payer.name) is: \(expense.payer.balance)")
-                    Text("Current balance of payee \(expense.payee.name) is: \(expense.payee.balance)")
+                    //Text("Current balance of payee \(expense.payee.name) is: \(expense.payee.balance)")
                 }
                 .padding()
 

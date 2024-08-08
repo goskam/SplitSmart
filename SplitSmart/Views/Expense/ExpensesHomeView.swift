@@ -64,7 +64,7 @@ struct ExpensesHomeView: View {
             }
                         
             // Add a button to navigate to BalancesView
-            NavigationLink(destination: BalancesView()) {
+            NavigationLink(destination: BalancesView(group: group)) {
                 Text("Balances")
                     .padding(10)
                     .background(.thinMaterial)

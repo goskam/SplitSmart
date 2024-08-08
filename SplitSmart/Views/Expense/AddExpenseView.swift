@@ -24,6 +24,10 @@ struct AddExpenseView: View {
     @State private var payer: GroupMember?
     //@State private var selectedPayees: Set<GroupMember> = []
     @State private var payee: GroupMember?
+    @State private var splitAmounts: [(member: GroupMember, amount: Double)] = []
+    @State private var showSplitDetails = false
+
+
 
     let group: Group
     
@@ -50,7 +54,7 @@ struct AddExpenseView: View {
     ]
     
     private var hasValidDetails: Bool {
-        !name.isEmpty && amount != 0.0
+        !name.isEmpty && amount != 0.0 && payer != nil
     }
     
     var body: some View {
@@ -96,44 +100,76 @@ struct AddExpenseView: View {
                     
                 }
                 
-                Section("Split equally with") {
-                    Picker("", selection: $payee) {
-                        Text("Select payee").tag(GroupMember?.none) // Placeholder for unselected state
-                        ForEach(filteredGroupMembers) { member in
-                            Text(member.name).tag(member as GroupMember?)
+                Section("How to split") {
+                    // Save button to add the new expense
+                    Button("Split equally") {
+                        //below line for debugging purposes
+                        //try? modelContext.delete(model: Expense.self)
+
+                        if category == "Select a category" {
+                            category = "Other"
+                        }
+                        
+                        // Ensure selectedGroupMember is not nil
+                        guard let payer = payer else {
+                            // Handle the case where no group member is selected
+                            // You could show an alert or a message here
+                            print("No group member selected")
+                            return
+                        }
+                        
+    //                    guard let payee = payee else {
+    //                        print("No payees selected")
+    //                        return
+    //                    }
+                        
+                        // Calculate the split amount for each member
+                        let memberCount = filteredGroupMembers.count
+                        let splitAmount = amount / Double(memberCount)
+                        
+                        // Prepare the split amounts
+                        splitAmounts = filteredGroupMembers.map { member in
+                            (member, splitAmount)
+                        }
+                        
+                        showSplitDetails = true
+                        
+
+                    }
+                    .disabled(!hasValidDetails)
+                }
+                
+                if showSplitDetails {
+                    Section("Split details") {
+                        ForEach(splitAmounts, id: \.member.id) { entry in
+                            HStack {
+                                Text(entry.member.name)
+                                Spacer()
+                                Text(String(format: "%.2f", entry.amount))
+                                    .foregroundColor(entry.amount < 0 ? .red : .green)
+                            }
                         }
                     }
-                    .frame(maxWidth: 140, alignment: .leading) // Adjust width and alignment
                 }
+//                Section("Split equally with") {
+//                    Picker("", selection: $payee) {
+//                        Text("Select payee").tag(GroupMember?.none) // Placeholder for unselected state
+//                        ForEach(filteredGroupMembers) { member in
+//                            Text(member.name).tag(member as GroupMember?)
+//                        }
+//                    }
+//                    .frame(maxWidth: 140, alignment: .leading) // Adjust width and alignment
+//                }
 
             
 
             }
             .navigationTitle("Add new expense")
             .toolbar {
-                // Save button to add the new expense
-                Button("Save") {
-                    //below line for debugging purposes
-                    //try? modelContext.delete(model: Expense.self)
+                Button ("Save") {
+                    guard let payer = payer else { return }
 
-                    if category == "Select a category" {
-                        category = "Other"
-                    }
-                    
-                    // Ensure selectedGroupMember is not nil
-                    guard let payer = payer else {
-                        // Handle the case where no group member is selected
-                        // You could show an alert or a message here
-                        print("No group member selected")
-                        return
-                    }
-                    
-                    guard let payee = payee else {
-                        print("No payees selected")
-                        return
-                    }
-                    
-                    let newExpense = Expense(name: name, category: category, amount: amount, creationDate: .now, currencyCode: currencyCode, payer: payer, payee: payee, group: group)
+                    let newExpense = Expense(name: name, category: category, amount: amount, creationDate: .now, currencyCode: currencyCode, payer: payer, group: group)
                     
                     print(newExpense.creationDate)
                     print(newExpense.currencyCode)
@@ -142,24 +178,34 @@ struct AddExpenseView: View {
                     modelContext.insert(newExpense)
                     
                     // Update balances: split amount in half
-                    let splitAmount = amount / 2
-                    payer.balance += splitAmount
-                    payee.balance -= splitAmount
+//                    let splitAmount = amount / 2
+//                    payer.balance += splitAmount
+//                    payee.balance -= splitAmount
+                    
+                    //test
+                    // Update balances
+                    for entry in splitAmounts {
+                        if entry.member.id == payer.id {
+                            // Payer's balance is credited with the total amount minus their share
+                            entry.member.balance += amount - entry.amount
+                        } else {
+                            // Other members' balances are debited by their share
+                            entry.member.balance -= entry.amount
+                        }
+                    }
+                    
                     
                     // Save changes to the model context
                     try? modelContext.save()
                     
                     dismiss()
                 }
-                .disabled(!hasValidDetails)
+                .disabled(!hasValidDetails || !showSplitDetails)
+
             }
         }
     }
     
-    //Filter group members for specific froup
-//    private var filteredGroupMembers: [GroupMember] {
-//        return allGroupMembers.filter { $0.group == group }
-//    }
 }
 
 
